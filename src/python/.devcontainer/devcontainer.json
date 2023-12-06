@@ -36,4 +36,17 @@
 
 	// Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
+
+    // HB:
+    ,"runArgs": [
+		"--net", "host"
+		,"-e", "DISPLAY=${env:DISPLAY}"
+		,"-v", "/tmp/.X11-unix:/tmp/.X11-unix"
+        ,"-v", "/dev/dri:/dev/dri"
+	]
+    ,"mounts": [
+        // "source=${localEnv:USERPROFILE},target=/mnt/${localEnv:USER},type=bind,consistency=cached"		// Windows
+        // "source=${localEnv:HOME},target=/mnt/${localEnv:USER},type=bind,consistency=cached"				// Linux
+        "source=${localEnv:HOME}/projects/python/projects/,target=/workdir,type=bind,consistency=cached"    // Python
+    ]
 }
