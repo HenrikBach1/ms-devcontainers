@@ -42,7 +42,7 @@
 	"remoteUser": "vscode"
 
     // HB:
-	,"name": "cpp devcontainers/microsoft"
+	,"name": "cpp kernel devcontainers/microsoft"
     ,"runArgs": [
 		"--net", "host"
 		,"-e", "DISPLAY=${env:DISPLAY}"
@@ -52,6 +52,5 @@
     ,"mounts": [
         // "source=${localEnv:USERPROFILE},target=/mnt/${localEnv:USER},type=bind,consistency=cached"		// Windows
         "source=${localEnv:HOME},target=/mnt/${localEnv:USER},type=bind,consistency=cached"					// Linux
-        // "source=${localEnv:HOME}/projects/cpp/projects/,target=/workdir,type=bind,consistency=cached"	//
     ]
 }
