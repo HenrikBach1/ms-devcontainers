@@ -43,6 +43,7 @@
 
     // HB:
 	,"name": "cpp kernel devcontainers/microsoft"
+	// Enable X11 forwarding:
     ,"runArgs": [
 		"--net", "host"
 		,"-e", "DISPLAY=${env:DISPLAY}"
