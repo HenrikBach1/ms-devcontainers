@@ -55,5 +55,6 @@
 		// config.vm.synced_folder "C:/Users/henri","/mnt/vagrant"                                       # Vagrant: Windows
 		// config.vm.synced_folder "C:/Users/henri/OneDrive/Projects","/projects"                        # Vagrant: Windows
 		"source=${localEnv:HOME},target=/mnt/${localEnv:USER},type=bind,consistency=cached"				// DevContainer: Linux
+		,"source=${localEnv:HOME}/projects,target=/projects,type=bind,consistency=cached"				// DevContainer: Linux
     ]
 }
