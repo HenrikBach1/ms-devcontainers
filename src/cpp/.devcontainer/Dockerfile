@@ -21,7 +21,7 @@ RUN chmod +x /tmp/install-vcpkg.sh \
     && ./tmp/install-vcpkg.sh ${USERNAME} \
     && rm -f /tmp/install-vcpkg.sh
 
-# .devcontainer\base-scripts\install-dev-tools.sh
+# .devcontainer/base-scripts/install-tools-ubuntu.sh
 # # [Optional] Uncomment this section to install additional OS packages.
 # # HB: 1st/2nd: For Linux Kernel Development
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

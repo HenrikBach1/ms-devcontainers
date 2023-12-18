@@ -4,21 +4,23 @@
 export RUN="sudo -s"
 
 # [Optional] Uncomment this section to install additional OS packages.
-# HB: 1st: For CPP Development
-# HB: 2nd: For Linux Kernel Development
-# HB: 3rd/4th: For Yocto
-# HB: 5th: For X11 forwarding
 $RUN << EOF
+    # For CPP Development
     apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
-        build-essential cmake cppcheck valgrind clang lldb llvm gdb \
-    && apt-get -y install --no-install-recommends \
-        git ctags make cmake \
-    && apt-get -y install --no-install-recommends \
-        gawk wget git-core subversion diffstat unzip sysstat texinfo build-essential chrpath socat python python3 python3-pip \
-        xz-utils locales cpio screen tmux sudo iputils-ping iproute2 fluxbox tightvncserver \
-    && apt-get -y install --no-install-recommends \
-        liblz4-tool libzstd-dev \
-    && apt-get -y install --no-install-recommends \
+        build-essential cmake cppcheck valgrind clang lldb llvm gdb
+    
+    # For Linux Kernel Development
+    apt-get -y install --no-install-recommends \
+        git make cmake exuberant-ctags 
+    
+    # For Yocto
+    apt-get -y install --no-install-recommends \
+        gawk wget git-core subversion diffstat unzip sysstat texinfo build-essential chrpath socat python3 python3-pip \
+        xz-utils locales cpio screen tmux sudo iputils-ping iproute2 fluxbox tightvncserver liblz4-tool libzstd-dev \
+        zstd file
+
+    # For X11 forwarding
+    apt-get -y install --no-install-recommends \
         xauth
 EOF
