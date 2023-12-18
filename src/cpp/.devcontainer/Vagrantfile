@@ -7,14 +7,20 @@
 # you're doing.
 Vagrant.configure("2") do |config|
   # config.vm.name = "ubuntu-22.04-cpp"
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "hashicorp/bionic64"
-
+  # config.vm.box = "hashicorp/bionic64"
+  config.vm.provider "docker" do |d|
+    # d.image = "crops/poky:latest"
+    d.image = "ubuntu:latest"
+    d.remains_running = true
+  end
+  
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -74,9 +80,9 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    # apt-get install -y apache2
-    /mnt/vagrant/OneDrive/Projects/DevContainers/github/henrikbach1/ms-devcontainers/src/cpp/.devcontainer/base-scripts/install-tools-debian.sh
-    apt-get autoclean autoremove
+    # # apt-get install -y apache2
+    # /mnt/vagrant/OneDrive/Projects/DevContainers/github/henrikbach1/ms-devcontainers/src/cpp/.devcontainer/base-scripts/install-tools-debian.sh
+    # apt-get autoclean autoremove
   SHELL
 
   # Enable x11 forwarding
