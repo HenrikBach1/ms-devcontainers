@@ -1,2 +1,7 @@
 node_modules/
 .tgz
+
+# HB:
+**/devcontainer-lock.json
+**/.vagrant/
+**/typescript
