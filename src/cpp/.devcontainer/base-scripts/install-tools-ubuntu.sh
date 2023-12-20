@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# install-tools-debian.sh
+# install-tools-ubuntu.sh
 
 export RUN="sudo -s"
 
