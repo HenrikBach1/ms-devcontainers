@@ -51,10 +51,11 @@
         ,"-v", "/dev/dri:/dev/dri"
 	]
     ,"mounts": [
-        // "source=${localEnv:USERPROFILE},target=/mnt/${localEnv:USER},type=bind,consistency=cached"	// DevContainer: Windows
-		// config.vm.synced_folder "C:/Users/henri","/mnt/vagrant"                                       # Vagrant: Windows
-		// config.vm.synced_folder "C:/Users/henri/OneDrive/Projects","/projects"                        # Vagrant: Windows
-		"source=${localEnv:HOME},target=/mnt/${localEnv:USER},type=bind,consistency=cached"				// DevContainer: Linux
-		,"source=${localEnv:HOME}/projects,target=/projects,type=bind,consistency=cached"				// DevContainer: Linux
+        // "source=${localEnv:USERPROFILE},target=/mnt/${localEnv:USER},type=bind,consistency=cached"											// DevContainer: Windows
+		// config.vm.synced_folder "C:/Users/henri","/mnt/vagrant", mount_options: ["sync"]  													# Vagrant: Windows
+		// config.vm.synced_folder "C:/Projects","/projects", mount_options: ["sync"]        													# Vagrant: Windows
+		// docker run -it --name=cpp-kernel-ubuntu2204 -v "C:/Users/henri":"/mnt/vagrant" -v "C:/Projects":"/projects" ubuntu:22.04 /bin/bash 	# Docker
+		"source=${localEnv:HOME},target=/mnt/${localEnv:USER},type=bind,consistency=cached"														// DevContainer: Linux
+		,"source=${localEnv:HOME}/projects,target=/projects,type=bind,consistency=cached"														// DevContainer: Linux
     ]
 }
