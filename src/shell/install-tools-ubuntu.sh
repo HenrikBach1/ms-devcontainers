@@ -5,10 +5,11 @@ export RUN="sudo -s"
 
 # [Optional] Uncomment this section to install additional OS packages.
 $RUN << EOF
-    # For CPP Development
+    # For CPP Development and debuging in general
     apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
-        build-essential cmake cppcheck valgrind clang lldb llvm gdb
+        build-essential cmake cppcheck valgrind clang lldb llvm gdb \
+        nano less
     
     # For Linux Kernel Development
     apt-get -y install --no-install-recommends \
