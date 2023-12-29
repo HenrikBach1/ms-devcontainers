@@ -3,6 +3,12 @@
 
 export RUN="sudo -s"
 
+apt update -y
+
+if ! type "sudo" &> /dev/null; then
+    apt install -y sudo
+fi
+
 # [Optional] Uncomment this section to install additional OS packages.
 $RUN << EOF
     # For CPP Development and debuging in general
