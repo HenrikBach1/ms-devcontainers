@@ -1,0 +1,1 @@
+docker run -it --name=cpp-kernel-ubuntu2204 -v "${HOME}":"/mnt/${USER}" -v "${HOME}/projects":"/projects" ubuntu:22.04 /bin/bash
