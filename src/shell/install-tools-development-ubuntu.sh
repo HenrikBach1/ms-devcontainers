@@ -3,10 +3,22 @@
 
 export RUN="sudo -s"
 
-apt update -y
+if [[ "${USER}" == "" ]]; then
+        if [[ ! ${HOME} == "" ]]; then
+            export USER=$(basename "$HOME")
+        else
+            echo "Cannot state which user is running in the terminal"
+            exit 1
+        fi
+fi
 
-if ! type "sudo" &> /dev/null; then
-    apt install -y sudo
+if [[ "${USER}" == "root" ]]; then
+    # Suppose first time installation
+    apt update -y
+
+    if ! type "sudo" &> /dev/null; then
+        apt install -y sudo
+    fi
 fi
 
 # [Optional] Uncomment this section to install additional OS packages.
