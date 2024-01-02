@@ -30,6 +30,7 @@ $RUN << EOF
         nano less
     
     # For ROS2 - Humble
+    #   https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html
     # Enable universe repos
     apt install software-properties-common
     add-apt-repository universe
