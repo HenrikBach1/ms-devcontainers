@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 # install-tools-ubuntu.sh
 
+distro=humble
 export RUN="sudo -s"
 
 if [[ "${USER}" == "" ]]; then
@@ -29,8 +30,8 @@ $RUN << EOF
         build-essential cmake cppcheck valgrind clang lldb llvm gdb \
         nano less
     
-    # For ROS2 - Humble
-    #   https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html
+    # For ROS2 - ${distro}
+    #   https://docs.ros.org/en/${distro}/Installation/Ubuntu-Install-Debians.html
     # Enable universe repos
     apt install software-properties-common
     add-apt-repository universe
@@ -43,10 +44,26 @@ $RUN << EOF
     apt update -y
     apt upgrade -y
     apt install -y ros-dev-tools
-    apt install -y ros-humble-ros-base
-    apt install -y ros-humble-desktop
+    apt install -y ros-${distro}-ros-base
+    apt install -y ros-${distro}-desktop
+    rosdep init
+    rosdep update
+    sudo apt install -y ament_cmake
+    sudo apt install -y python3-pip
+    sudo apt install -y python3-colcon-common-extensions
 
     # For X11 forwarding
     apt-get -y install --no-install-recommends \
         xauth
 EOF
+
+pip3 install --upgrade pip
+pip3 install setuptools==58.2.0
+# pip3 install rclpy # TODO: Is this necessary?
+
+source /opt/ros/${distro}/setup.sh
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+
+# # @ROS2 Project
+# colcon build
+# source install/setup.sh
