@@ -4,6 +4,7 @@
 docker run -it \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v /mnt/wslg:/mnt/wslg \
+    --volume "C:/Projects":"/projects" \
     -e DISPLAY=:0 \
     -e WAYLAND_DISPLAY=wayland-0 \
     -e XDG_RUNTIME=/mnt/wslg/runtime-dir \
