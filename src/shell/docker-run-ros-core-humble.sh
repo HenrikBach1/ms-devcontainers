@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+# docker-run-ros-core-humble
+
+docker run -it \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v /mnt/wslg:/mnt/wslg \
+    -e DISPLAY=:0 \
+    -e WAYLAND_DISPLAY=wayland-0 \
+    -e XDG_RUNTIME=/mnt/wslg/runtime-dir \
+    -e PULSE_SERVER=/mnt/wslg/PulseServer \
+    ros:humble-ros-core
