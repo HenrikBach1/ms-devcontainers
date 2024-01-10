@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
-# docker-run-ros-core-humble
+# source C:\Users\henri\OneDrive\Projects\DevContainers\github\henrikbach1\ms-devcontainers\src\shell\
+    # docker-run-ros-core-humble.sh
 
 docker run -it \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
