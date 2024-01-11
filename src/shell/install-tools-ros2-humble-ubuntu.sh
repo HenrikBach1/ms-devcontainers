@@ -1,7 +1,14 @@
 #! /usr/bin/env bash
-# install-tools-ubuntu.sh
+# install-tools-ros2-humble-ubuntu.sh
+# script -c 'export debug_enable=true; ./install-tools-ros2-humble-ubuntu.sh'
 
-distro=humble
+if [[ $debug_enable == true ]]; then
+    set -vx
+else
+    set +vx
+fi
+
+export ROS_DISTRO=humble
 export RUN="sudo -s"
 
 if [[ "${USER}" == "" ]]; then
@@ -22,47 +29,77 @@ if [[ "${USER}" == "root" ]]; then
     fi
 fi
 
-# [Optional] Uncomment this section to install additional OS packages.
 $RUN << EOF
-    # For CPP Development and debuging in general
+    ###########################################################################
+    echo For X11 forwarding
+    ###########################################################################
+    apt-get -y install --no-install-recommends \
+        xauth
+
+    ###########################################################################
+    echo For CPP Development and debuging in general
+    ###########################################################################
     apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
         build-essential cmake cppcheck valgrind clang lldb llvm gdb \
         nano less
     
-    # For ROS2 - ${distro}
-    #   https://docs.ros.org/en/${distro}/Installation/Ubuntu-Install-Debians.html
-    # Enable universe repos
-    apt install software-properties-common
-    add-apt-repository universe
-    # Add the ROS 2 GPG key
-    apt update -y && sudo apt install curl -y
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-            -o /usr/share/keyrings/ros-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-    # Install ROS 2 packages
-    apt update -y
-    apt upgrade -y
-    apt install -y ros-dev-tools
-    apt install -y ros-${distro}-ros-base
-    apt install -y ros-${distro}-desktop
+    if [[ ! -d /opt/ros ]]; then
+        ###########################################################################
+        echo Start installation of ROS2 - ${ROS_DISTRO}...
+        #   https://docs.ros.org/en/${ROS_DISTRO}/Installation/Ubuntu-Install-Debians.html
+        ###########################################################################
+
+        #--------------------------------------------------------------------------
+        echo Enable universe repos
+        #--------------------------------------------------------------------------
+        apt install -y software-properties-common
+        add-apt-repository universe
+
+        #--------------------------------------------------------------------------
+        echo Add the ROS2 GPG key
+        #--------------------------------------------------------------------------
+        apt update -y && sudo apt install -y \
+            curl
+        curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+                -o /usr/share/keyrings/ros-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+        #--------------------------------------------------------------------------
+        echo Install ROS2 packages
+        #--------------------------------------------------------------------------
+        apt update -y
+        apt upgrade -y
+        apt install -y ros-dev-tools
+        apt install -y ros-${ROS_DISTRO}-ros-base
+    fi
+
+    #--------------------------------------------------------------------------
+    # TODO: The rest compared with docker container ros:humble-ros-core?: <--
+    #--------------------------------------------------------------------------
+    apt install -y ros-${ROS_DISTRO}-desktop
     rosdep init
     rosdep update
     sudo apt install -y ament_cmake
     sudo apt install -y python3-pip
     sudo apt install -y python3-colcon-common-extensions
-
-    # For X11 forwarding
-    apt-get -y install --no-install-recommends \
-        xauth
 EOF
 
+#--------------------------------------------------------------------------
+echo Adjusting pip and its tools...
+#--------------------------------------------------------------------------
 pip3 install --upgrade pip
 pip3 install setuptools==58.2.0
-# pip3 install rclpy # TODO: Is this necessary?
+# TODO: The rest compared with docker container ros:humble-ros-core?: -->
+echo End installation of ROS2 - ${ROS_DISTRO}...
 
-source /opt/ros/${distro}/setup.sh
+#--------------------------------------------------------------------------
+echo Sourcing ROS2 scripts...
+#--------------------------------------------------------------------------
+source /opt/ros/${ROS_DISTRO}/setup.sh
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+
+set +vx
 
 # # @ROS2 Project
 # colcon build
