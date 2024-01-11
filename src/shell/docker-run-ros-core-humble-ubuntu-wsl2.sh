@@ -8,7 +8,7 @@ docker run -it \
     -v /mnt/wslg:/mnt/wslg \
     -e DISPLAY=:0 \
     -e WAYLAND_DISPLAY=wayland-0 \
-    -e XDG_RUNTIME=/mnt/wslg/runtime-dir \
+    -e XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir \
     -e PULSE_SERVER=/mnt/wslg/PulseServer \
     --name ros-core-humble \
     --volume "/mnt/c/Users/${USER}/OneDrive/Projects":"/projects" \
