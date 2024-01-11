@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# install-tools-ubuntu.sh
+# install-tools-development-ubuntu.sh
 
 export RUN="sudo -s"
 
