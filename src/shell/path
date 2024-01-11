@@ -1,2 +1,4 @@
-path=$(echo "$1" | sed 's/\\/\//g' | sed 's/^\([A-Za-z]\):/\/mnt\/\L\1/')
-echo $path
+#! /usr/bin/env bash
+# path
+
+echo $(echo "$1" | sed 's/\\/\//g' | sed 's/^\([A-Za-z]\):/\/mnt\/\L\1/')
