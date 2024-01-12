@@ -25,8 +25,8 @@ docker_run()
 }
 
 # # Get the directory path of the currently executing script
-# current_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# script_to_source="${current_script_dir}/docker-run-helper.sh"
+# include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# script_to_source="${include_dir}/docker-run-helper.sh"
 
 # # Check if the script exists before sourcing it
 # if [ -f "$script_to_source" ]; then

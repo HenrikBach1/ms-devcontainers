@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# docker-run-yocto-crops-poky-windows.sh
+echo docker-run-yocto-crops-poky-windows.sh
 
 container_user=pokyuser
 container_name="crops-yocto-poky"
@@ -13,7 +13,7 @@ container_volumes=" \
 container_cmd="/bin/bash"
 image_name="crops/poky:latest"
 
-current_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source "${current_script_dir}/docker-run-helper.sh"
+include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source "${include_dir}/docker-run-helper.sh"
 
 docker_run
