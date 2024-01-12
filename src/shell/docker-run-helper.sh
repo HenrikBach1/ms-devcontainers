@@ -1,4 +1,5 @@
-#! /bin/bash
+#! /usr/bin/env bash
+# docker-run-helper.sh
 
 docker_run()
 {
