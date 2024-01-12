@@ -1,4 +1,5 @@
-# -e DISPLAY=<host-ip>:0 -v /tmp/.X11-unix:/tmp/.X11-unix
+#! /usr/bin/env bash
+# docker-run-ubuntu2204-linux.sh
 
 container_user=pokyuser
 container_name="cpp-kernel-ubuntu2204"
