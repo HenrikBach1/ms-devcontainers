@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# install-tools-ubuntu.sh
+# install-tools-development-ubuntu.sh
 
 export RUN="sudo -s"
 
@@ -21,7 +21,6 @@ if [[ "${USER}" == "root" ]]; then
     fi
 fi
 
-# [Optional] Uncomment this section to install additional OS packages.
 $RUN << EOF
     # For CPP Development and debuging in general
     apt-get update && export DEBIAN_FRONTEND=noninteractive \
