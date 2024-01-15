@@ -9,10 +9,10 @@ container_cmd="/bin/bash"
 image_name="ubuntu:22.04"
 
 # Get the directory path of the currently executing script
-current_script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Construct the path to the script you want to source
-script_to_source="${current_script_dir}/docker-run-helper.sh"
+source "${include_dir}/docker-run-helper.sh"
 
 # Check if the script exists before sourcing it
 if [ -f "$script_to_source" ]; then
