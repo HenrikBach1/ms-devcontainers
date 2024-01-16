@@ -26,13 +26,15 @@ docker_run
 # The error message indicates that the locale settings are invalid. You can try the following steps to fix it:
 
 # Open a terminal window.
-# Run the command sudo nano /etc/locale.gen to open the locale configuration file.
-# Uncomment the line en_US.UTF-8 UTF-8 by removing the # character at the beginning of the line.
-# Save the file and exit the editor.
-# Run the command sudo locale-gen to generate the new locale settings.
-# Run the command sudo update-locale LANG=en_US.UTF-8 to update the locale settings.
-# If you still encounter the same error, you can try the following:
+# # Run the command sudo nano /etc/locale.gen to open the locale configuration file.
+# # Uncomment the line en_US.UTF-8 UTF-8 by removing the # character at the beginning of the line.
+# # Save the file and exit the editor:
 
+# sudo sed -i '/# en_US.UTF-8 UTF-8/s/^#//g' /etc/locale.gen
+# sudo locale-gen
+# sudo update-locale LANG=en_US.UTF-8
+
+# If you still encounter the same error, you can try the following:
 # Open the file /etc/default/locale with a text editor.
 # Add the following lines to the file:
 # LANG=en_US.UTF-8
