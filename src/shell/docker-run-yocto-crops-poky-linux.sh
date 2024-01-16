@@ -3,7 +3,6 @@ echo docker-run-yocto-crops-poky-linux.sh
 
 include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "${include_dir}/docker-run-helper.sh"
-source "${include_dir}/path"
 
 container_user=pokyuser
 container_name="crops-yocto-poky"
