@@ -12,5 +12,10 @@ sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo systemctl enable docker
 sudo systemctl start docker
 
+# Create docker group and add current user to it
+# sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
 # Verify
-sudo docker run hello-world
+docker run hello-world
