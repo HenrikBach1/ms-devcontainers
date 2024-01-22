@@ -3,7 +3,12 @@
 # source ~/projects/DevContainers/github/henrikbach1/ms-devcontainers/src/shell/
     # docker-run-ros-core-humble-ubuntu.sh
 
-docker run -it \
+include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source "${include_dir}/docker-run-helper.sh"
+# docker_run
+
+docker \
+    run -it \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v /mnt/wslg:/mnt/wslg \
     -e DISPLAY=:0 \
