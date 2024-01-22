@@ -70,7 +70,14 @@ $RUN << EOF
         #--------------------------------------------------------------------------
         apt update -y
         apt upgrade -y
+
+        # The package ros-dev-tools contains a number of tools that are useful for developing ROS packages, including 
+            # rosbag, ros_readbagfile, rosbash, roscd, rosed, rosclean, roscore, rosdep, roscreate-pkg, roscreate-stack, and rosrun 1.
+        # To list all the commands in the package, you can run the following command in your Ubuntu terminal:
+        # dpkg -L ros-dev-tools | grep /bin/
+        # This will display the complete list of commands that are included in the ros-dev-tools package 2.
         apt install -y ros-dev-tools
+
         apt install -y ros-${ROS_DISTRO}-ros-base
     fi
 
