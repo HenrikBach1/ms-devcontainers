@@ -1,6 +1,13 @@
 #! /usr/bin/env bash
 echo docker-run-helper.sh
 
+xhost +
+X11_CONTAINER_ARGS=" \
+    --volume $HOME/.Xauthority:/root/.Xauthority:rw \
+    -e DISPLAY=$DISPLAY \
+    --net=host \
+    "
+
         # Only available in swarm:
         # docker volume update \
         #     ${container_volumes} \
@@ -19,6 +26,7 @@ docker_run()
     else
         echo "Container doesn't exists. Creates container..."
         docker container run -it \
+            ${X11_CONTAINER_ARGS} \
             --name ${container_name} \
             ${container_volumes} \
             ${image_name}
@@ -28,6 +36,7 @@ docker_run()
 # # Get the directory path of the currently executing script
 # include_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # source "${include_dir}/docker-run-helper.sh" # script_to_source =
+# docker_run
 
 # # Check if the script exists before sourcing it
 # if [ -f "$script_to_source" ]; then
