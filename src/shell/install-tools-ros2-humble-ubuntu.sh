@@ -64,6 +64,7 @@ $RUN << EOF
         build-essential cmake cppcheck valgrind clang lldb llvm gdb \
         nano less
     
+    # Skip if ROS is already installed...
     if [[ ! -d /opt/ros ]]; then
         ###########################################################################
         echo Start installation of ROS2 - ${ROS_DISTRO}...
@@ -99,26 +100,30 @@ $RUN << EOF
         apt install -y ros-dev-tools
 
         apt install -y ros-${ROS_DISTRO}-ros-base
+
+        rosdep init
+        rosdep update
+
+        # TODO: sudo apt install -y ament_cmake: ?
+        sudo apt install -y ros-humble-rmf-cmake-uncrustify
+
+        sudo apt install -y python3-pip
+        sudo apt install -y python3-colcon-common-extensions
+
+        #--------------------------------------------------------------------------
+        echo Adjusting pip and its tools...
+        #--------------------------------------------------------------------------
+        pip3 install --upgrade pip
+        pip3 install setuptools==58.2.0
     fi
 
-    #--------------------------------------------------------------------------
-    # TODO: The rest compared with docker container ros:humble-ros-core?: <--
-    #--------------------------------------------------------------------------
-    apt install -y ros-${ROS_DISTRO}-desktop
-    rosdep init
-    rosdep update
-    # TODO: sudo apt install -y ament_cmake: ?
-    sudo apt install -y ros-humble-rmf-cmake-uncrustify
-
-    sudo apt install -y python3-pip
-    sudo apt install -y python3-colcon-common-extensions
+    if [[ -d /opt/ros ]]; then
+        #--------------------------------------------------------------------------
+        # TODO: The rest compared with docker container ros:humble-ros-core?: <--
+        #--------------------------------------------------------------------------
+        apt install -y ros-${ROS_DISTRO}-desktop
+    fi
 EOF
-
-#--------------------------------------------------------------------------
-echo Adjusting pip and its tools...
-#--------------------------------------------------------------------------
-pip3 install --upgrade pip
-pip3 install setuptools==58.2.0
 
 # TODO: The rest compared with docker container ros:humble-ros-core?: -->
 echo End installation of ROS2 - ${ROS_DISTRO}...
@@ -128,8 +133,6 @@ echo Sourcing ROS2 scripts...
 #--------------------------------------------------------------------------
 source /opt/ros/${ROS_DISTRO}/setup.sh
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-
-set +vx
 
 # # @ROS2 Project
 # colcon build
