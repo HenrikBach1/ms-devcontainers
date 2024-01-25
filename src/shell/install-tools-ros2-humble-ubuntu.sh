@@ -1,32 +1,52 @@
 #! /usr/bin/env bash
 # install-tools-ros2-humble-ubuntu.sh
-# script -c 'export debug_enable=true; ./install-tools-ros2-humble-ubuntu.sh'
-
-if [[ $debug_enable == true ]]; then
-    set -vx
-else
-    set +vx
-fi
 
 export ROS_DISTRO=humble
 export RUN="sudo -s"
+export rosuser=rosuser
+source /etc/os-release
+
+if [[ ! $ID_LIKE == *"debian"* ]]; then
+    echo "This script only supports debian and its deriviatives!"
+    return 1
+fi
 
 if [[ "${USER}" == "" ]]; then
         if [[ ! ${HOME} == "" ]]; then
             export USER=$(basename "$HOME")
         else
             echo "Cannot state which user is running in the terminal"
-            exit 1
+            return 1
         fi
 fi
 
-if [[ "${USER}" == "root" ]]; then
-    # Suppose first time installation
-    apt update -y
+if [[ ! "${USER}" == "$rosuser" 
+    ]]; then
+        if [[ "${USER}" == "root" 
+                && $ID_LIKE == *"debian"*
+            ]]; then
+                if ! type "sudo" &> /dev/null; then
+                        # Assume first time installation
+                        apt update -y
+                        apt install -y sudo
 
-    if ! type "sudo" &> /dev/null; then
-        apt install -y sudo
-    fi
+                        echo "Adding $rosuser to sudo..."
+                        sudo adduser $rosuser
+                        if [[ $ID_LIKE == *"debian"* ]]; then
+                                sudo usermod -aG sudo $rosuser  # Debian/Ubuntu
+                        elif [[ $ID == *"fedora"* ]]; then
+                                sudo usermod -aG wheel $rosuser # Fedora
+                        fi
+                fi
+        fi
+
+        groups $rosuser
+        echo "Run this script again, when in new user space..."
+        echo "Lifting ${USER} to $rosuser space..."
+        su $rosuser
+        exit 0
+else
+        echo "Nothing to do: User is already $rosuser"
 fi
 
 $RUN << EOF
@@ -87,7 +107,9 @@ $RUN << EOF
     apt install -y ros-${ROS_DISTRO}-desktop
     rosdep init
     rosdep update
-    sudo apt install -y ament_cmake
+    # TODO: sudo apt install -y ament_cmake: ?
+    sudo apt install -y ros-humble-rmf-cmake-uncrustify
+
     sudo apt install -y python3-pip
     sudo apt install -y python3-colcon-common-extensions
 EOF
@@ -97,6 +119,7 @@ echo Adjusting pip and its tools...
 #--------------------------------------------------------------------------
 pip3 install --upgrade pip
 pip3 install setuptools==58.2.0
+
 # TODO: The rest compared with docker container ros:humble-ros-core?: -->
 echo End installation of ROS2 - ${ROS_DISTRO}...
 
