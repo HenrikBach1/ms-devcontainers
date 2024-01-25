@@ -1,9 +1,14 @@
 #! /usr/bin/env bash
 # install-tools-ros2-humble-ubuntu.sh
 
-export ROS_DISTRO=humble
-export RUN="sudo -s"
 export rosuser=rosuser
+
+if [[ -e $ROS_DISTRO ]]; then
+    export ROS_DISTRO=humble
+fi
+
+export RUN="sudo -s"
+
 source /etc/os-release
 
 if [[ ! $ID_LIKE == *"debian"* ]]; then
@@ -50,19 +55,19 @@ else
 fi
 
 $RUN << EOF
-    ###########################################################################
-    echo For X11 forwarding
-    ###########################################################################
-    apt-get -y install --no-install-recommends \
-        xauth
+    # ###########################################################################
+    # echo For X11 forwarding
+    # ###########################################################################
+    # apt-get -y install --no-install-recommends \
+    #     xauth
 
-    ###########################################################################
-    echo For CPP Development and debuging in general
-    ###########################################################################
-    apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install \
-        build-essential cmake cppcheck valgrind clang lldb llvm gdb \
-        nano less
+    # ###########################################################################
+    # echo For CPP Development and debuging in general
+    # ###########################################################################
+    # apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    # && apt-get -y install \
+    #     build-essential cmake cppcheck valgrind clang lldb llvm gdb \
+    #     nano less
     
     # Skip if ROS is already installed...
     if [[ ! -d /opt/ros ]]; then
@@ -106,7 +111,10 @@ $RUN << EOF
 
         # TODO: sudo apt install -y ament_cmake: ?
         sudo apt install -y ros-humble-rmf-cmake-uncrustify
+    fi
 
+    if [[ -d /opt/ros ]]; then
+        apt install -y ros-${ROS_DISTRO}-desktop
         sudo apt install -y python3-pip
         sudo apt install -y python3-colcon-common-extensions
 
@@ -114,18 +122,13 @@ $RUN << EOF
         echo Adjusting pip and its tools...
         #--------------------------------------------------------------------------
         pip3 install --upgrade pip
+        # TODO:
+        # WARNING: The scripts pip, pip3, pip3.10 and pip3.11 are installed in '/home/rosuser/.local/bin' which is not on PATH.
+        # Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location:
+        export PATH=$PATH:/home/$rosuser/.local/bin
         pip3 install setuptools==58.2.0
     fi
-
-    if [[ -d /opt/ros ]]; then
-        #--------------------------------------------------------------------------
-        # TODO: The rest compared with docker container ros:humble-ros-core?: <--
-        #--------------------------------------------------------------------------
-        apt install -y ros-${ROS_DISTRO}-desktop
-    fi
 EOF
-
-# TODO: The rest compared with docker container ros:humble-ros-core?: -->
 echo End installation of ROS2 - ${ROS_DISTRO}...
 
 #--------------------------------------------------------------------------
