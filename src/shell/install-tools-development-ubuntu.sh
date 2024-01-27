@@ -2,23 +2,33 @@
 # install-tools-development-ubuntu.sh
 
 export RUN="sudo -s"
+source /etc/os-release
+
+if [[ ! $ID_LIKE == *"debian"* ]]; then
+    echo "This script only supports debian and its deriviatives!"
+    return 1
+fi
 
 if [[ "${USER}" == "" ]]; then
         if [[ ! ${HOME} == "" ]]; then
             export USER=$(basename "$HOME")
         else
             echo "Cannot state which user is running in the terminal"
-            exit 1
+            return 1
         fi
 fi
 
-if [[ "${USER}" == "root" ]]; then
-    # Suppose first time installation
-    apt update -y
-
-    if ! type "sudo" &> /dev/null; then
-        apt install -y sudo
-    fi
+if [[ 1 == 1
+    ]]; then
+        if [[ "${USER}" == "root" 
+                && $ID_LIKE == *"debian"*
+            ]]; then
+                if ! type "sudo" &> /dev/null; then
+                    # Assume first time installation
+                    apt update -y
+                    apt install -y sudo
+                fi
+        fi
 fi
 
 $RUN << EOF
