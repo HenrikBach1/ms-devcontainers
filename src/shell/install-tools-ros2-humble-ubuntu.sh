@@ -1,25 +1,54 @@
 #! /usr/bin/env bash
-# install-tools-ros2-humble-ubuntu.sh
+# source ./install-tools-ros2-humble-ubuntu.sh
+# clear; script -c 'set -vx; source ./install-tools-ros2-humble-ubuntu.sh --distro humble --force-install; set +vx'; set +vx
 
 export rosuser=rosuser
 
-if [[ "$1" == "--help" ]]; then
-echo "\
-* --distro <ros-distro>: humble
-"
-exit 0
+pause() {
+    read -p "Press Enter to continue..."
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        echo "This script must be source'd!"
+        pause
+        exit 1
 fi
 
-if [[ ! -v $ROS_DISTRO ]]; then
-    if [[ "$1" == "--distro" \
-            && -v $2
+if [[ "$1" == "--help" ]]; then
+echo "\
+* --distro humble
+  --force-install:  Force installation of ROS, even if it is already installed
+  --set-distro:     Skip after setting distro
+"
+return 0
+fi
+
+# Parse arguments
+while [[ ! "$1" == "" ]]; do
+    if [[ "$1" == "--force-install" ]]; then
+        force_install=true
+        echo "Enforcing new installation..."
+        shift
+    elif [[ "$1" == "--distro" \
+                && -v $2
         ]]; then
         export ROS_DISTRO=$2
+        shift
+        shift
+    elif [[ "$1" == "--set-distro" ]]; then
+        set_distro=true
+        echo "Skip after setting distro..."
+        shift
     fi
+done
 
-    if [[ ! -v $ROS_DISTRO ]]; then
-        export ROS_DISTRO=humble
-    fi
+if [[ ! -v $ROS_DISTRO ]]; then
+    export ROS_DISTRO=humble
+fi
+echo "Installing ROS2 $ROS_DISTRO..."
+
+if [[ "${set_distro}" == "true" ]]; then
+    return 0
 fi
 
 export RUN="sudo -s"
@@ -99,7 +128,9 @@ $RUN << EOF
     fi
 
     # Skip if ROS is already installed...
-    if [[ ! -d /opt/ros ]]; then
+    if [[ ! -d /opt/ros 
+            || "${force_install}" == "true"
+        ]]; then
         ###########################################################################
         echo "Start installation of ROS2 ${ROS_DISTRO}..."
         #   https://docs.ros.org/en/${ROS_DISTRO}/Installation/Ubuntu-Install-Debians.html
@@ -112,15 +143,18 @@ $RUN << EOF
         apt install -y software-properties-common
         add-apt-repository universe
 
-        #--------------------------------------------------------------------------
-        echo Add the ROS2 GPG key
-        #--------------------------------------------------------------------------
-        apt update -y && sudo apt install -y \
-            curl
-        curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-                -o /usr/share/keyrings/ros-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $UBUNTU_CODENAME main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-                # http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        if [[ ! "${force_install}" == "true" ]]; then
+            #--------------------------------------------------------------------------
+            echo Add the ROS2 GPG key
+            #--------------------------------------------------------------------------
+            apt update -y && sudo apt install -y \
+                curl
+            curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+                    -o /usr/share/keyrings/ros-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $UBUNTU_CODENAME main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+                    # http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        fi
+
         #--------------------------------------------------------------------------
         echo Install ROS2 packages
         #--------------------------------------------------------------------------
@@ -135,6 +169,7 @@ EOF
 echo Updating extisting installation...
 #--------------------------------------------------------------------------
 if [[ -d /opt/ros ]]; then
+    echo "Installing Desktop for ROS2 distro..."
     sudo apt install -y ros-${ROS_DISTRO}-desktop
 
     # The package ros-dev-tools contains a number of tools that are useful for developing ROS packages, including 
@@ -143,7 +178,9 @@ if [[ -d /opt/ros ]]; then
     # dpkg -L ros-dev-tools | grep /bin/
     # This will display the complete list of commands that are included in the ros-dev-tools package 2.
     sudo apt install -y ros-dev-tools
-    rosdep init
+    sudo rosdep fix-permissions
+    sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
+    sudo rosdep init
     rosdep update
 
     #--------------------------------------------------------------------------
@@ -173,9 +210,10 @@ echo "Sourcing ROS2 (and related) scripts..."
 #--------------------------------------------------------------------------
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 source /opt/ros/${ROS_DISTRO}/setup.sh
+return 0
 
 # @ROS2 Project:
-# source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-# colcon build
-# ?source install/setup.sh
-# source /opt/ros/${ROS_DISTRO}/setup.sh
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+colcon build
+source install/setup.sh
+source /opt/ros/${ROS_DISTRO}/setup.sh
