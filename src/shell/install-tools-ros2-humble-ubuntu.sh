@@ -1,13 +1,25 @@
 #! /usr/bin/env bash
 # install-tools-ros2-humble-ubuntu.sh
 
-export rosuser=rosuser
+if [[ "$1" == "--help" ]]; then
+echo "\
+* --distro <ros-distro>: humble
+"
+exit 0
+fi
 
 if [[ -e $ROS_DISTRO ]]; then
-    export ROS_DISTRO=humble
+    if [[ "$1" == "--distro" \
+            && ! -e $2
+        ]]
+        export ROS_DISTRO=$2
+    else
+        export ROS_DISTRO=humble
+    fi
 fi
 
 export RUN="sudo -s"
+noop=true
 
 source /etc/os-release
 
@@ -68,7 +80,19 @@ $RUN << EOF
     # && apt-get -y install \
     #     build-essential cmake cppcheck valgrind clang lldb llvm gdb \
     #     nano less
-    
+
+    # Set Locale
+    if env | grep -q "^LANG=en_US.UTF-8$"; then
+        $noop
+    else
+        sudo apt update && sudo apt install locales
+        sudo locale-gen en_US en_US.UTF-8
+        sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+        export LANG=en_US.UTF-8
+
+        locale  # verify settings    
+    fi
+
     # Skip if ROS is already installed...
     if [[ ! -d /opt/ros ]]; then
         ###########################################################################
@@ -76,6 +100,7 @@ $RUN << EOF
         #   https://docs.ros.org/en/${ROS_DISTRO}/Installation/Ubuntu-Install-Debians.html
         ###########################################################################
 
+        # Setup Sources
         #--------------------------------------------------------------------------
         echo Enable universe repos
         #--------------------------------------------------------------------------
@@ -89,54 +114,63 @@ $RUN << EOF
             curl
         curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
                 -o /usr/share/keyrings/ros-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $UBUNTU_CODENAME main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+                # http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
         #--------------------------------------------------------------------------
         echo Install ROS2 packages
         #--------------------------------------------------------------------------
         apt update -y
         apt upgrade -y
 
-        # The package ros-dev-tools contains a number of tools that are useful for developing ROS packages, including 
-            # rosbag, ros_readbagfile, rosbash, roscd, rosed, rosclean, roscore, rosdep, roscreate-pkg, roscreate-stack, and rosrun 1.
-        # To list all the commands in the package, you can run the following command in your Ubuntu terminal:
-        # dpkg -L ros-dev-tools | grep /bin/
-        # This will display the complete list of commands that are included in the ros-dev-tools package 2.
-        apt install -y ros-dev-tools
-
         apt install -y ros-${ROS_DISTRO}-ros-base
-
-        rosdep init
-        rosdep update
-
-        # TODO: sudo apt install -y ament_cmake: ?
-        sudo apt install -y ros-humble-rmf-cmake-uncrustify
-    fi
-
-    if [[ -d /opt/ros ]]; then
-        apt install -y ros-${ROS_DISTRO}-desktop
-        sudo apt install -y python3-pip
-        sudo apt install -y python3-colcon-common-extensions
-
-        #--------------------------------------------------------------------------
-        echo Adjusting pip and its tools...
-        #--------------------------------------------------------------------------
-        pip3 install --upgrade pip
-        # TODO:
-        # WARNING: The scripts pip, pip3, pip3.10 and pip3.11 are installed in '/home/rosuser/.local/bin' which is not on PATH.
-        # Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location:
-        export PATH=$PATH:/home/$rosuser/.local/bin
-        pip3 install setuptools==58.2.0
     fi
 EOF
+
+#--------------------------------------------------------------------------
+echo Updating extisting installation...
+#--------------------------------------------------------------------------
+if [[ -d /opt/ros ]]; then
+    sudo apt install -y ros-${ROS_DISTRO}-desktop
+
+    # The package ros-dev-tools contains a number of tools that are useful for developing ROS packages, including 
+        # rosbag, ros_readbagfile, rosbash, roscd, rosed, rosclean, roscore, rosdep, roscreate-pkg, roscreate-stack, and rosrun 1.
+    # To list all the commands in the package, you can run the following command in your Ubuntu terminal:
+    # dpkg -L ros-dev-tools | grep /bin/
+    # This will display the complete list of commands that are included in the ros-dev-tools package 2.
+    sudo apt install -y ros-dev-tools
+    rosdep init
+    rosdep update
+
+    #--------------------------------------------------------------------------
+    echo Adjusting tools...
+    #--------------------------------------------------------------------------
+    # TODO: sudo apt install -y ament_cmake: ?
+    sudo apt install -y ros-${ROS_DISTRO}-rmf-cmake-uncrustify
+    sudo apt install -y python3-colcon-common-extensions
+    source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+
+    sudo apt install -y python3-pip
+    #--------------------------------------------------------------------------
+    echo Adjusting pip...
+    #--------------------------------------------------------------------------
+    pip3 install --upgrade pip
+    # TODO:
+    # WARNING: The scripts pip, pip3, pip3.10 and pip3.11 are installed in '/home/rosuser/.local/bin' which is not on PATH.
+    # Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location:
+    export PATH=$PATH:/home/$rosuser/.local/bin
+    pip3 install setuptools==58.2.0
+fi
 echo End installation of ROS2 - ${ROS_DISTRO}...
 
 #--------------------------------------------------------------------------
-echo Sourcing ROS2 scripts...
+# Environment setup
+echo Sourcing ROS2 (and related) scripts...
 #--------------------------------------------------------------------------
-source /opt/ros/${ROS_DISTRO}/setup.sh
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+source /opt/ros/${ROS_DISTRO}/setup.sh
 
-# # @ROS2 Project
+# @ROS2 Project:
+# source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 # colcon build
-# source install/setup.sh
+# ?source install/setup.sh
+# source /opt/ros/${ROS_DISTRO}/setup.sh
