@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 # install-tools-ros2-humble-ubuntu.sh
 
+export rosuser=rosuser
+
 if [[ "$1" == "--help" ]]; then
 echo "\
 * --distro <ros-distro>: humble
@@ -8,12 +10,14 @@ echo "\
 exit 0
 fi
 
-if [[ -e $ROS_DISTRO ]]; then
+if [[ ! -v $ROS_DISTRO ]]; then
     if [[ "$1" == "--distro" \
-            && ! -e $2
-        ]]
+            && -v $2
+        ]]; then
         export ROS_DISTRO=$2
-    else
+    fi
+
+    if [[ ! -v $ROS_DISTRO ]]; then
         export ROS_DISTRO=humble
     fi
 fi
@@ -42,28 +46,29 @@ if [[ ! "${USER}" == "$rosuser"
         if [[ "${USER}" == "root" 
                 && $ID_LIKE == *"debian"*
             ]]; then
-                if ! type "sudo" &> /dev/null; then
-                        # Assume first time installation
-                        apt update -y
-                        apt install -y sudo
+            if ! type "sudo" &> /dev/null; then
+                # Assume first time installation
+                apt update -y
+                apt install -y sudo
 
-                        echo "Adding $rosuser to sudo..."
-                        sudo adduser $rosuser
-                        if [[ $ID_LIKE == *"debian"* ]]; then
-                                sudo usermod -aG sudo $rosuser  # Debian/Ubuntu
-                        elif [[ $ID == *"fedora"* ]]; then
-                                sudo usermod -aG wheel $rosuser # Fedora
-                        fi
+                echo "Adding $rosuser to sudo..."
+                sudo adduser $rosuser
+                if [[ $ID_LIKE == *"debian"* ]]; then
+                        sudo usermod -aG sudo $rosuser  # Debian/Ubuntu
+                elif [[ $ID == *"fedora"* ]]; then
+                        sudo usermod -aG wheel $rosuser # Fedora
                 fi
-        fi
 
-        groups $rosuser
-        echo "Run this script again, when in new user space..."
-        echo "Lifting ${USER} to $rosuser space..."
-        su $rosuser
-        exit 0
+                echo "$USER: groups $rosuser..."
+                groups $rosuser
+                echo "Run this script again, when in new user space..."
+                echo "Lifting ${USER} to $rosuser space..."
+                su $rosuser
+                exit 0
+            fi
+        fi
 else
-        echo "Nothing to do: User is already $rosuser"
+        echo "Nothing to do: User $USER is already $rosuser"
 fi
 
 $RUN << EOF
@@ -96,7 +101,7 @@ $RUN << EOF
     # Skip if ROS is already installed...
     if [[ ! -d /opt/ros ]]; then
         ###########################################################################
-        echo Start installation of ROS2 - ${ROS_DISTRO}...
+        echo "Start installation of ROS2 ${ROS_DISTRO}..."
         #   https://docs.ros.org/en/${ROS_DISTRO}/Installation/Ubuntu-Install-Debians.html
         ###########################################################################
 
@@ -160,11 +165,11 @@ if [[ -d /opt/ros ]]; then
     export PATH=$PATH:/home/$rosuser/.local/bin
     pip3 install setuptools==58.2.0
 fi
-echo End installation of ROS2 - ${ROS_DISTRO}...
+echo "End installation of ROS2 ${ROS_DISTRO}..."
 
 #--------------------------------------------------------------------------
 # Environment setup
-echo Sourcing ROS2 (and related) scripts...
+echo "Sourcing ROS2 (and related) scripts..."
 #--------------------------------------------------------------------------
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 source /opt/ros/${ROS_DISTRO}/setup.sh
