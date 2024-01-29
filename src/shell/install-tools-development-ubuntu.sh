@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# install-tools-development-ubuntu.sh
+# ./install-tools-development-ubuntu.sh
 
 export RUN="sudo -s"
 source /etc/os-release
