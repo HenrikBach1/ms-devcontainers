@@ -32,23 +32,23 @@ if [[ 1 == 1
 fi
 
 $RUN << EOF
-    # For CPP Development and debuging in general
+    # CPP Development and debuging in general
     apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
         build-essential cmake cppcheck valgrind clang lldb llvm gdb \
         nano less
     
-    # For Linux Kernel Development
+    # Linux Kernel Development
     apt-get -y install --no-install-recommends \
         git make cmake exuberant-ctags 
     
-    # For Yocto
+    # Yocto Development: HOSTTOOLS
     apt-get -y install --no-install-recommends \
         gawk wget git-core subversion diffstat unzip sysstat texinfo build-essential chrpath socat python3 python3-pip \
         xz-utils locales cpio screen tmux sudo iputils-ping iproute2 fluxbox tightvncserver liblz4-tool libzstd-dev \
         zstd file
 
-    # For X11 forwarding
+    # X11 forwarding
     apt-get -y install --no-install-recommends \
         xauth
 EOF
