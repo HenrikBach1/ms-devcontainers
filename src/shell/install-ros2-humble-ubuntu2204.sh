@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
-# source ./install-tools-ros2-humble-ubuntu.sh
-# clear; script -c 'set -vx; source ./install-tools-ros2-humble-ubuntu.sh --distro humble --force-install; set +vx'; set +vx
+# source ./install-ros2-humble-ubuntu2204.sh
+# clear; script -c 'set -vx; source ./install-ros2-humble-ubuntu2204.sh --distro humble --force-install; set +vx'; set +vx
 
 export rosuser=rosuser
 
