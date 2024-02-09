@@ -16,7 +16,7 @@ X11_CONTAINER_ARGS=" \
 docker_run()
 {
     if docker ps -a --format '{{.Names}}' | grep -q "^$container_name$"; then
-        echo "Container exists..."
+        echo "Container ALREADY exists..."
         docker container start \
             ${container_name} \
         && docker container exec -it \
@@ -24,7 +24,7 @@ docker_run()
             ${container_name} \
             ${container_cmd}
     else
-        echo "Container doesn't exists. Creates container..."
+        echo "Creates container..."
         docker container run -it \
             ${X11_CONTAINER_ARGS} \
             --name ${container_name} \

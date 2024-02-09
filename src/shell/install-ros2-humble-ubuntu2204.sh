@@ -4,15 +4,30 @@
 
 export rosuser=rosuser
 
+# (return 0 2>/dev/null) && sourced=1 || sourced=0 # Shell agnostic (bash, ksh, zsh)
+is_sourced() {
+    [[ "$BASH_SOURCE" != "$0" ]] #&& true || false
+    # [[ sourced == 1 ]] && true || false
+}
+RETURN() {
+    [[ "$BASH_SOURCE" != "$0" ]] && return $1 || exit $1
+    # [[ is_sourced == true ]] && return $1 || exit $1
+    # [[ sourced == 1 ]] && return $1 || exit $1
+}
+
+# if [[ sourced == 1 ]]; then
+# if [[ is_sourced ]]; then
+if [[ "$BASH_SOURCE" != "$0" ]]; then
+    # echo "This script is source'd!..."
+    true
+else
+    echo "This script must be source'd!"
+    RETURN 1
+fi
+
 pause() {
     read -p "Press Enter to continue..."
 }
-
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-        echo "This script must be source'd!"
-        pause
-        exit 1
-fi
 
 if [[ "$1" == "--help" ]]; then
 echo "\
@@ -54,7 +69,13 @@ fi
 export RUN="sudo -s"
 noop=true
 
-source /etc/os-release
+os_release="/etc/os-release"
+if [[ -f $os_release ]]; then
+    source $os_release
+else
+    echo "Cannot find file: $os_release"
+    RETURN 1
+fi
 
 if [[ ! $ID_LIKE == *"debian"* ]]; then
     echo "This script only supports debian and its deriviatives!"
@@ -64,9 +85,10 @@ fi
 if [[ "${USER}" == "" ]]; then
         if [[ ! ${HOME} == "" ]]; then
             export USER=$(basename "$HOME")
+            echo "Derived to: USER=${USER}"
         else
-            echo "Cannot state which user is running in the terminal"
-            return 1
+            echo "HALT: Cannot state whom is running the terminal!..."
+            RETURN 1
         fi
 fi
 
@@ -88,8 +110,8 @@ if [[ ! "${USER}" == "$rosuser"
                         sudo usermod -aG wheel $rosuser # Fedora
                 fi
 
-                echo "$USER: groups $rosuser..."
-                groups $rosuser
+                echo "$USER: $(groups) $rosuser..."
+                # groups $rosuser
                 echo "Run this script again, when in new user space..."
                 echo "Lifting ${USER} to $rosuser space..."
                 su $rosuser
@@ -97,7 +119,7 @@ if [[ ! "${USER}" == "$rosuser"
             fi
         fi
 else
-        echo "Nothing to do: User $USER is already $rosuser"
+    echo "Nothing to do: User $USER is already $rosuser"
 fi
 
 $RUN << EOF
