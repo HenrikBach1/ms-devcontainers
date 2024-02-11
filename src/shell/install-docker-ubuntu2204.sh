@@ -1,15 +1,11 @@
 #! /usr/bin/env bash
 # install-docker-ubuntu2204.sh
 
-sudo apt-get update -y
-sudo apt-get upgrade -y
+sudo apt-get update -y && sudo apt-get upgrade -y
 
 # https://docs.docker.com/engine/install/ubuntu/
 
 # Uninstall previous installation
-# for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
-#     sudo apt-get remove $pkg
-# done
 sudo apt-get remove -y \
     docker.io docker-doc docker-compose docker-compose-v2 podman-docker \
     containerd runc

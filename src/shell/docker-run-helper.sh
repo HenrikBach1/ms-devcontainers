@@ -15,21 +15,23 @@ X11_CONTAINER_ARGS=" \
         #
 docker_run()
 {
-    if docker ps -a --format '{{.Names}}' | grep -q "^$container_name$"; then
-        echo "Container ALREADY exists..."
-        docker container start \
-            ${container_name} \
-        && docker container exec -it \
-            --user=${container_user} \
-            ${container_name} \
-            ${container_cmd}
-    else
-        echo "Creates container..."
-        docker container run -it \
-            ${X11_CONTAINER_ARGS} \
-            --name ${container_name} \
-            ${container_volumes} \
-            ${image_name}
+    if command -v docker &> /dev/null; then
+        if docker ps -a --format '{{.Names}}' | grep -q "^$container_name$"; then
+            echo "Container ALREADY exists..."
+            docker container start \
+                ${container_name} \
+            && docker container exec -it \
+                --user=${container_user} \
+                ${container_name} \
+                ${container_cmd}
+        else
+            echo "Creates container..."
+            docker container run -it \
+                ${X11_CONTAINER_ARGS} \
+                --name ${container_name} \
+                ${container_volumes} \
+                ${image_name}
+        fi
     fi
 }
 
